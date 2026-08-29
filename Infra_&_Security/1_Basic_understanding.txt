@@ -1,0 +1,322 @@
+AWS Infrastructure & Security — Quick Notes
+---------------------------------------------------------------------------
+1. Region
+
+A Region is a geographical location where AWS has infrastructure.
+
+Example:
+
+Mumbai Region
+ap-south-1
+
+A Region contains multiple Availability Zones.
+
+Region
+├── AZ-1
+├── AZ-2
+└── AZ-3
+
+Think:
+Region = Geographic area
+
+------------------------------------------------------------------------
+2. Availability Zone (AZ)
+
+An Availability Zone is an isolated infrastructure/data-center location inside a Region.
+
+Region
+├── AZ-1 → Infrastructure
+├── AZ-2 → Infrastructure
+└── AZ-3 → Infrastructure
+
+Multiple AZs are used for high availability.
+
+If one AZ has a failure, infrastructure in another AZ can continue running.
+
+Think:
+AZ = Isolated location inside a Region
+---------------------------------------------------------------------------
+
+
+3. VPC
+
+A VPC (Virtual Private Cloud) is your isolated virtual network inside an AWS Region.
+
+Region
+└── VPC
+    ├── Subnet
+    ├── Subnet
+    └── Subnet
+
+You define things such as:
+
+IP ranges
+Subnets
+Routing
+Network connectivity
+Network security
+
+Think:
+VPC = Your private network in AWS
+
+---------------------------------------------------------------------------------
+4. Subnet
+
+A Subnet is a smaller network inside a VPC.
+
+VPC
+├── Subnet A
+├── Subnet B
+└── Subnet C
+
+Subnets are associated with an Availability Zone.
+
+Common distinction:
+
+Public Subnet
+→ Can have direct internet connectivity
+
+Private Subnet
+→ No direct inbound internet connectivity
+
+Think:
+Subnet = Smaller network inside VPC
+
+Security
+
+There are two major concepts that are often confused:
+
+Network Security → Security Group
+AWS Permissions  → IAM
+
+---------------------------------------------------------------------------------
+
+5. Security Group
+
+A Security Group (SG) is a virtual firewall that controls network traffic to and from a resource.
+
+It mainly controls:
+
+Source → Port → Protocol
+
+Example:
+
+Inbound:
+Port 80  ← Internet
+Port 443 ← Internet
+Port 22  ← My IP
+
+Meaning:
+
+Internet → Port 80  → Allowed
+Internet → Port 443 → Allowed
+Random IP → Port 22 → Blocked
+My IP → Port 22 → Allowed
+
+Think:
+
+Security Group = "Who can connect to me, and on which port?"
+---------------------------------------------------------------------------------
+
+
+
+6. Security Group-to-Security Group
+
+A Security Group can reference another Security Group as the source.
+
+Example:
+
+SG-A
+  ↓
+SG-B
+
+Meaning:
+
+Resources associated with SG-A can communicate with resources associated with SG-B according to the allowed rule.
+
+This is better than manually specifying individual IP addresses when the relationship is between groups of resources.
+---------------------------------------------------------------------------------
+
+
+
+
+7. IAM
+
+IAM (Identity and Access Management) controls permissions to perform actions on AWS resources.
+
+Example:
+
+Identity
+   ↓
+IAM Policy
+   ↓
+Permissions
+
+A permission could mean:
+
+Read something
+Create something
+Delete something
+Modify something
+
+Think:
+
+IAM = "What are you allowed to do in AWS?"
+---------------------------------------------------------------------------------
+
+8. IAM User
+
+An IAM User represents an identity, usually a person or application.
+
+IAM User
+   ↓
+Permissions
+
+Example:
+
+Developer
+→ Can read certain resources
+→ Cannot delete resources
+9. IAM Group
+
+An IAM Group is a collection of IAM Users.
+
+Developers Group
+├── User A
+├── User B
+└── User C
+
+You can attach permissions to the group.
+
+Developers Group
+        ↓
+    Permissions
+        ↓
+   All members
+
+Think:
+
+IAM Group = Collection of users with common permissions
+---------------------------------------------------------------------------------
+
+10. IAM Role
+
+An IAM Role is an identity that can be assumed by a trusted entity.
+
+A role contains permissions but does not belong permanently to one user.
+
+Entity
+   ↓
+Assume Role
+   ↓
+IAM Role
+   ↓
+Permissions
+
+Roles are commonly used when one AWS service, application, or external identity needs temporary access to AWS resources.
+
+Think:
+
+IAM Role = A set of permissions that an identity can temporarily assume
+---------------------------------------------------------------------------------
+
+11. IAM Policy
+
+An IAM Policy defines what is Allowed or Denied.
+
+Conceptually:
+
+Policy
+├── Effect: Allow
+├── Action: Some operation
+└── Resource: Some AWS resource
+
+Example:
+
+Allow
+→ Read
+→ Resource X
+
+Think:
+
+Policy = The actual permission rules
+---------------------------------------------------------------------------------
+
+12. Security Group vs IAM
+	Security Group	IAM
+Purpose	Network security	AWS permissions
+Controls	Network traffic	Actions
+Main question	"Who can connect?"	"What can I do?"
+Based on	IP, port, protocol, SG	Identity, policies, roles
+Example	Allow TCP port 443	Allow read access
+---------------------------------------------------------------------------------
+
+13. IAM User vs Group vs Role vs Policy
+IAM
+│
+├── User
+│   └── Individual identity
+│
+├── Group
+│   └── Collection of users
+│
+├── Role
+│   └── Assumable identity
+│
+└── Policy
+    └── Defines permissions
+
+Simple way to remember:
+
+User  = Who
+Group = Which users
+Role  = Assumable identity
+Policy = What they can do
+
+---------------------------------------------------------------------------------
+
+14. Complete Mental Model
+AWS
+│
+└── Region
+    │
+    ├── AZ
+    │   └── Infrastructure
+    │
+    ├── AZ
+    │   └── Infrastructure
+    │
+    └── VPC
+        │
+        ├── Subnet
+        ├── Subnet
+        └── Subnet
+
+Security sits on top of this:
+
+Network Security
+└── Security Group
+    └── Controls network connections
+
+Access Control
+└── IAM
+    ├── User
+    ├── Group
+    ├── Role
+    └── Policy
+        └── Controls AWS permissions
+
+---------------------------------------------------------------------------------
+
+One-line memory
+Region      = Where?
+AZ          = Which isolated location?
+VPC         = Which private network?
+Subnet      = Which smaller network?
+Security SG = Who can connect?
+IAM         = What can they do?
+Policy      = What exactly is allowed/denied?
+User        = Individual identity
+Group       = Collection of users
+Role        = Assumable identity
+---------------------------------------------------------END------------------------------------------------------------- 
